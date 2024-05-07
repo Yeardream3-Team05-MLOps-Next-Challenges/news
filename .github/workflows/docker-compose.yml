@@ -1,0 +1,24 @@
+name: news_ci
+
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.x
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        pip install confluent-kafka kafka-python requests beautifulsoup4
+    - name: Execute script
+      env:
+        SERVER_HOST: ${{ secrets.SERVER_HOST }}
+      run: |
+        news.py
