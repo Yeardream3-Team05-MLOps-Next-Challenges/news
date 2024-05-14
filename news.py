@@ -1,5 +1,3 @@
-!pip install confluent-kafka
-!pip install kafka-python
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, parse_qs
