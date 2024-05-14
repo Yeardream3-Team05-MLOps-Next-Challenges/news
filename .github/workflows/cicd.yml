@@ -1,0 +1,37 @@
+# .github/workflows/cicd.yml
+name: Deploy to Oracle Cloud
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Build and Push Docker image to Oracle Cloud Instance
+      run: |
+        ssh -o StrictHostKeyChecking=no -i ${{ secrets.ORACLE_SSH_PRIVATE_KEY }} ${{ secrets.ORACLE_SSH_USER }}@${{ secrets.ORACLE_INSTANCE_IP }} << 'EOF'
+          cd /path/to/your/project
+          git pull
+          docker build -t news-crawler .
+          docker stop news-crawler-container || true
+          docker rm news-crawler-container || true
+          docker run -d --name news-crawler-container -e SERVER_HOST=$SERVER_HOST -e ABSOLUTE_URL=$ABSOLUTE_URL -e MAIN_URL=$MAIN_URL news-crawler
+        EOF
+      env:
+        SERVER_HOST: ${{ secrets.SERVER_HOST }}
+        ABSOLUTE_URL: ${{ secrets.ABSOLUTE_URL }}
+        MAIN_URL: ${{ secrets.MAIN_URL }}
