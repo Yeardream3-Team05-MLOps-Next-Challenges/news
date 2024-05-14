@@ -24,7 +24,7 @@ jobs:
     - name: Build and Push Docker image to Oracle Cloud Instance
       run: |
         ssh -o StrictHostKeyChecking=no -i ${{ secrets.ORACLE_SSH_PRIVATE_KEY }} ${{ secrets.ORACLE_SSH_USER }}@${{ secrets.ORACLE_INSTANCE_IP }} << 'EOF'
-          cd /path/to/your/project
+          cd ~/docker/news
           git pull
           docker build -t news-crawler .
           docker stop news-crawler-container || true
