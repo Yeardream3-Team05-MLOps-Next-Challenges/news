@@ -1,17 +1,12 @@
-FROM python:3.8
+# Dockerfile
+FROM python:3.8-slim
 
 WORKDIR /app
 
 COPY requirements.txt .
-
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 COPY . .
 
-# 환경 변수 설정 (필요한 경우)
-# ENV 변수명=값
-ENV :
-  HOST_USER: ${{ secrests.HOST_USER }}
-  KEY: ${{ secrets.KEY }}
-  
-CMD ["python", "./news.py"]
+CMD ["python", "news.py"]
+
