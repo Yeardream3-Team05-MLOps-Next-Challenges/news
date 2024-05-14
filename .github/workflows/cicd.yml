@@ -1,37 +1,53 @@
-# .github/workflows/cicd.yml
 name: Deploy to Oracle Cloud
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
-  build-and-deploy:
+
+  build:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker image
+      run: docker build -t news-crawler .
+
+    - name: Run Docker container
+      run: docker run -d --name news-crawler-temp news-crawler
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Copy file to server
+      uses: appleboy/scp-action@master
       with:
-        python-version: '3.8'
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.KEY }}
+        source: "."
+        target: "~/docker/news/"
 
-    - name: Build and Push Docker image to Oracle Cloud Instance
-      run: |
-        ssh -o StrictHostKeyChecking=no -i ${{ secrets.ORACLE_SSH_PRIVATE_KEY }} ${{ secrets.ORACLE_SSH_USER }}@${{ secrets.ORACLE_INSTANCE_IP }} << 'EOF'
+    - name: Deploy to Oracle Cloud server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.KEY }}
+        script: |
           cd ~/docker/news
-          git pull
-          docker build -t news-crawler .
           docker stop news-crawler-container || true
           docker rm news-crawler-container || true
-          docker run -d --name news-crawler-container -e SERVER_HOST=$SERVER_HOST -e ABSOLUTE_URL=$ABSOLUTE_URL -e MAIN_URL=$MAIN_URL news-crawler
-        EOF
-      env:
-        SERVER_HOST: ${{ secrets.SERVER_HOST }}
-        ABSOLUTE_URL: ${{ secrets.ABSOLUTE_URL }}
-        MAIN_URL: ${{ secrets.MAIN_URL }}
+          docker build -t news-crawler .
+          docker run -d --name news-crawler-container -e SERVER_HOST="${{ secrets.SERVER_HOST }}" -e ABSOLUTE_URL="${{ secrets.ABSOLUTE_URL }}" -e MAIN_URL="${{ secrets.MAIN_URL }}" news-crawler
