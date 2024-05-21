@@ -20,9 +20,6 @@ jobs:
     - name: Build Docker image
       run: docker build -t news-crawler .
 
-    - name: Run Docker container
-      run: docker run -d --name news-crawler-temp news-crawler
-
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -30,7 +27,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Copy file to server
+    - name: Copy files to server
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.SERVER_HOST }}
@@ -49,5 +46,6 @@ jobs:
           cd ~/docker/news
           docker stop news-crawler-container || true
           docker rm news-crawler-container || true
-          docker build -t news-crawler .
-          docker run -d --name news-crawler-container -e SERVER_HOST="${{ secrets.SERVER_HOST }}" -e ABSOLUTE_URL="${{ secrets.ABSOLUTE_URL }}" -e MAIN_URL="${{ secrets.MAIN_URL }}" news-crawler
+          docker-compose down
+          docker-compose up -d --build
+
