@@ -2,7 +2,7 @@ version: '3'
 services:
   team5-news-crawler:
     build: .
-    ENV:
+    environment:
       SERVER_HOST: "${SERVER_HOST}"
       ABSOLUTE_URL: "${ABSOLUTE_URL}"
       MAIN_URL: "${MAIN_URL}"
