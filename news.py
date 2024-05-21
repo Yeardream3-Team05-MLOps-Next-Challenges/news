@@ -3,8 +3,10 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse, parse_qs
 import json
 import re
+import os
 import time
-from kafka import KafkaProducer  # Kafka 프로듀서를 위한 라이브러리 임포트
+from kafka import KafkaProducer
+
 
 
 SERVER_HOST = os.getenv('SERVER_HOST')
