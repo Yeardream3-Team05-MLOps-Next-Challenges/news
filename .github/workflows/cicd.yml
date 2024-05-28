@@ -1,4 +1,4 @@
-name: News Image CICD
+name: News CICD
 
 on:
   push:
