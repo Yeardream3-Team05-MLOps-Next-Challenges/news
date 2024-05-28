@@ -1,13 +1,12 @@
-name: Deploy to Oracle Cloud
+name: News Image CICD
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
 
@@ -18,10 +17,10 @@ jobs:
       uses: docker/setup-buildx-action@v3
 
     - name: Build Docker image
-      run: docker build -t news-crawler .
+      run: docker build -t myapp .
 
     - name: Run Docker container
-      run: docker run -d --name news-crawler-temp news-crawler
+      run: docker run -d myapp
 
   deploy:
     needs: build
@@ -39,15 +38,19 @@ jobs:
         source: "."
         target: "~/docker/news/"
 
-    - name: Deploy to Oracle Cloud server
+    - name: Deploy to Ubuntu server
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
-        key: ${{ secrets.KEY }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd ~/docker/news
-          docker stop news-crawler-container || true
-          docker rm news-crawler-container || true
-          docker build -t news-crawler .
-          docker run -d --name news-crawler-container -e SERVER_HOST="${{ secrets.SERVER_HOST }}" -e ABSOLUTE_URL="${{ secrets.ABSOLUTE_URL }}" -e MAIN_URL="${{ secrets.MAIN_URL }}" news-crawler
+          echo "APP_KEY=${{ secrets.APP_KEY }}" > .env
+          echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
+          echo "SERVER_HOST=${{ secrets.SERVER_HOST }}" >> .env
+          echo "MAIN_URL=${{ secrets.MAIN_URL }}" >> .env
+          echo "ABSOLUTE_URL=${{ secrets.ABSOLUTE_URL }}" >> .env
+          docker compose down --rmi all
+          docker compose build
+          docker compose up -d
