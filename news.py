@@ -37,7 +37,7 @@ def parse_article_urls(html):
         
         office_id = query_components['office_id'][0]
         article_id = query_components['article_id'][0]
-        
+        absolute_url = os.getenv('ABSOLUTE_URL')
         article_urls.append(absolute_url)
     
     return article_urls
@@ -68,7 +68,7 @@ def fetch_article_data(url):
 
 def main():
     """메인 실행 함수"""
-    
+    main_url = os.getenv('MAIN_URL')
     main_html = fetch_html(main_url)
     article_urls = parse_article_urls(main_html)
     
