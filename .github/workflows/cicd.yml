@@ -43,11 +43,9 @@ jobs:
       with:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        key: ${{ secrets.KEY }}
         script: |
           cd ~/docker/news
-          echo "APP_KEY=${{ secrets.APP_KEY }}" > .env
-          echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
           echo "SERVER_HOST=${{ secrets.SERVER_HOST }}" >> .env
           echo "MAIN_URL=${{ secrets.MAIN_URL }}" >> .env
           echo "ABSOLUTE_URL=${{ secrets.ABSOLUTE_URL }}" >> .env
