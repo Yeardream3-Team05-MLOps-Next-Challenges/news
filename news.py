@@ -10,7 +10,6 @@ from kafka import KafkaProducer
 
 
 SERVER_HOST = os.getenv('SERVER_HOST')
-absolute_url = os.getenv('ABSOLUTE_URL')
 main_url = os.getenv('MAIN_URL')
 
 # Kafka 프로듀서 설정
@@ -37,7 +36,7 @@ def parse_article_urls(html):
         
         office_id = query_components['office_id'][0]
         article_id = query_components['article_id'][0]
-        absolute_url = os.getenv('ABSOLUTE_URL')
+        absolute_url = f"https://n.news.naver.com/mnews/article/{office_id}/{article_id}"
         article_urls.append(absolute_url)
     
     return article_urls
