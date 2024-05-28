@@ -47,8 +47,10 @@ jobs:
         script: |
           cd ~/docker/news
           echo "SERVER_HOST=${{ secrets.SERVER_HOST }}" >> .env
+          echo "USER_NAME=${{ secrets.SERVER_USERNAME }}" >> .env
           echo "MAIN_URL=${{ secrets.MAIN_URL }}" >> .env
           echo "ABSOLUTE_URL=${{ secrets.ABSOLUTE_URL }}" >> .env
+          
           docker compose down --rmi all
           docker compose build
           docker compose up -d
