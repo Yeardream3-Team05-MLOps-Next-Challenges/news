@@ -1,11 +1,13 @@
 version: '3'
 services:
-  team5-news-crawler:
-    build: .
-    environment:
-      SERVER_HOST: "${SERVER_HOST}"
-      ABSOLUTE_URL: "${ABSOLUTE_URL}"
-      MAIN_URL: "${MAIN_URL}"
-    volumes:
-      - .:/app
-    restart: unless-stopped
+  app:
+      build: .
+      restart: unless-stopped
+      env_file:
+        - .env
+      networks:
+        - team5
+
+networks:
+  team5:
+    external: True
