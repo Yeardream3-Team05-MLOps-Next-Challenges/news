@@ -21,6 +21,19 @@ jobs:
 
     - name: Run Docker container
       run: docker run -d myapp
+      
+    - name: action-slack
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        author_name: GitHub Actions - build
+        fields: repo,commit,message,author
+        mention: here
+        if_mention: failure,cancelled
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: always() 
+    
 
   deploy:
     needs: build
@@ -54,3 +67,15 @@ jobs:
           docker compose down --rmi all
           docker compose build
           docker compose up -d
+          
+    - name: action-slack
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        author_name: GitHub Actions - deploy
+        fields: repo,commit,message,author
+        mention: here
+        if_mention: failure,cancelled
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: always()
