@@ -63,6 +63,9 @@ jobs:
           echo "USER_NAME=${{ secrets.SERVER_USERNAME }}" >> .env
           echo "MAIN_URL=${{ secrets.MAIN_URL }}" >> .env
           echo "ABSOLUTE_URL=${{ secrets.ABSOLUTE_URL }}" >> .env
+          echo "DOCKER_NAMESPACE=${{ secrets.NAMESPACE }}" >> .env
+          echo "PREFECT_API_URL=${{ secrets.PREFECT_API_URL }}" >> .env
+          echo "PREFECT_URL=${{ secrets.PREFECT_URL }}" >> .env
           
           docker compose down --rmi all
           docker compose build
