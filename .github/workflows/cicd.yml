@@ -70,44 +70,6 @@ jobs:
           docker compose down --rmi all
           docker compose build
           docker compose up -d
-  
-  prefect:
-    needs: deploy
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-
-    - name: Export PREFECT_API_URL
-      run: echo "PREFECT_API_URL=${{ secrets.PREFECT_API_URL }}" > .env
-
-    - name: Verify PREFECT_API_URL
-      run: cat .env
-
-    - name: Run Kafka to Elasticsearch Script
-      env:
-        PREFECT_API_URL: ${{ secrets.PREFECT_API_URL }}
-        PYTHONPATH: .
-      run: python Kafka_to_elasticsearch.py
-
-    - name: Register Prefect Flow
-      run: |
-        prefect deployment build -n my-flow-deployment -q default -sb github/my-repo Kafka_to_elasticsearch.py:my_flow
-        prefect deployment apply my_flow-deployment.yaml
-
-    - name: Run Prefect Flow
-      run: |
-        prefect deployment run my-flow-deployment --param key=value
           
     - name: action-slack
       uses: 8398a7/action-slack@v3
