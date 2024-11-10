@@ -84,9 +84,9 @@ def main():
         # URL을 전송된 URL 집합에 추가
         sent_urls.add(url)
 
-if __name__ == '__main__':
-    while True:
-        main()
-        print("데이터 업데이트 완료. 60초 후 다시 실행됩니다.")
-        time.sleep(60)  # 60초 대기 후 다시 실행
+# if __name__ == '__main__':
+#     while True:
+#         main()
+#         print("데이터 업데이트 완료. 60초 후 다시 실행됩니다.")
+#         time.sleep(60)  # 60초 대기 후 다시 실행
 
